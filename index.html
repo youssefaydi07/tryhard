@@ -59,7 +59,6 @@
         #btnReset { background-color: #7f8c8d; }
         #btnAddTime { background-color: #2980b9; }
 
-        /* Champ d'ajout de temps */
         #addSection {
             margin-top: 35px;
             background: #111;
@@ -118,26 +117,58 @@
         let enCours = false;
         let rafID = null;
 
-        function maj() {
-            if (!enCours) return;
+        // --- Sauvegarde de l'état ---
+        function saveState() {
+            localStorage.setItem("enCours", enCours);
+            localStorage.setItem("depart", depart);
+            localStorage.setItem("pauseTemps", pauseTemps);
+        }
 
-            let now = Date.now();
-            let ecoule = now - depart + pauseTemps;
+        // --- Chargement de l'état ---
+        function loadState() {
+            let savedEnCours = localStorage.getItem("enCours");
+            let savedDepart = localStorage.getItem("depart");
+            let savedPause = localStorage.getItem("pauseTemps");
 
+            if (savedEnCours !== null) enCours = savedEnCours === "true";
+            if (savedDepart !== null) depart = parseInt(savedDepart);
+            if (savedPause !== null) pauseTemps = parseInt(savedPause);
+
+            if (enCours && depart) {
+                rafID = requestAnimationFrame(maj);
+            } else {
+                afficher(pauseTemps);
+            }
+        }
+
+        // --- Fonction d'affichage formaté ---
+        function afficher(ecoule) {
             let h = Math.floor(ecoule / 3600000);
             let m = Math.floor((ecoule / 60000) % 60);
             let s = Math.floor((ecoule / 1000) % 60);
             let c = Math.floor((ecoule % 1000) / 10);
 
-            chrono.innerHTML = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${c.toString().padStart(2,'0')}`;
+            chrono.innerHTML =
+            `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}.${c.toString().padStart(2,'0')}`;
+        }
+
+        // --- Mise à jour du chronomètre ---
+        function maj() {
+            if (!enCours) return;
+
+            let now = Date.now();
+            let ecoule = now - depart + pauseTemps;
+            afficher(ecoule);
 
             rafID = requestAnimationFrame(maj);
         }
 
+        // --- Boutons ---
         document.getElementById("btnStart").onclick = () => {
             if (!enCours) {
                 enCours = true;
                 depart = Date.now();
+                saveState();
                 rafID = requestAnimationFrame(maj);
             }
         };
@@ -146,6 +177,7 @@
             if (enCours) {
                 enCours = false;
                 pauseTemps += Date.now() - depart;
+                saveState();
                 cancelAnimationFrame(rafID);
             }
         };
@@ -155,10 +187,11 @@
             cancelAnimationFrame(rafID);
             depart = null;
             pauseTemps = 0;
+            saveState();
             chrono.innerHTML = "00:00:00.00";
         };
 
-        // AJOUT DE TEMPS
+        // Ajout de temps
         document.getElementById("btnAddTime").onclick = () => {
             let h = parseInt(document.getElementById("h").value) || 0;
             let m = parseInt(document.getElementById("m").value) || 0;
@@ -167,11 +200,15 @@
             let ajout = h * 3600000 + m * 60000 + s * 1000;
 
             pauseTemps += ajout;
+            saveState();
 
             if (!enCours) {
-                chrono.innerHTML = chrono.innerHTML; // rafraîchir
+                afficher(pauseTemps);
             }
         };
+
+        // Charger l'état au démarrage
+        loadState();
     </script>
 
 </body>
