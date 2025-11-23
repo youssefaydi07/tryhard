@@ -184,13 +184,16 @@
         function afficher(ms) {
             chronoEl.textContent = formatTime(ms);
 
-            chronoEl.style.transform = "scale(1.07)";
-            chronoEl.style.filter = "blur(1px)";
+            // Effet glow premium : aucun flou, super fluide
+            chronoEl.style.textShadow = "0 0 18px rgba(255,255,255,0.20)";
+            chronoEl.style.transform = "scale(1.04)";
+
             setTimeout(() => {
+                chronoEl.style.textShadow = "0 0 0 rgba(0,0,0,0)";
                 chronoEl.style.transform = "scale(1)";
-                chronoEl.style.filter = "blur(0)";
-            }, 80);
+            }, 90);
         }
+
 
         function maj() {
             if (!state.enCours) return;
@@ -279,3 +282,4 @@
 
 </body>
 </html>
+
