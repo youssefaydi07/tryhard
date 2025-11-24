@@ -46,7 +46,7 @@
             display: inline-block;
             margin-bottom: 30px;
             box-shadow: 0 0 60px rgba(255,255,255,0.06);
-            transition: transform 0.08s ease, filter 0.4s ease, text-shadow 0.3s ease;
+            transition: transform 0.08s ease, text-shadow 0.3s ease;
         }
 
         button {
@@ -78,14 +78,14 @@
             background: var(--panel);
             padding: 25px;
             border-radius: 14px;
-            width: 330px;
+            width: 400px;
             margin-left: auto;
             margin-right: auto;
             box-shadow: 0 0 30px rgba(255,255,255,0.04);
         }
 
         #panel input {
-            width: 60px;
+            width: 70px;
             padding: 8px;
             font-size: 16px;
             text-align: center;
@@ -93,6 +93,7 @@
             background: var(--btn-bg);
             border: 1px solid #333;
             color: var(--fg);
+            margin: 5px;
         }
 
         .minimal h1,
@@ -118,11 +119,14 @@
     </div>
 
     <div id="panel">
-        <label>Ajouter / Enlever du temps :</label><br><br>
+        <label><b>Ajouter / Enlever du temps :</b></label><br><br>
 
-        <input id="h" type="number" min="0" placeholder="hh"> :
-        <input id="m" type="number" min="0" max="59" placeholder="mm"> :
-        <input id="s" type="number" min="0" max="59" placeholder="ss">
+        <input id="h" type="number" min="0" placeholder="Heures">
+        <input id="m" type="number" min="0" max="59" placeholder="Minutes">
+        <input id="s" type="number" min="0" max="59" placeholder="Secondes">
+        <br>
+        <input id="totalSec" type="number" min="0" placeholder="Sec totales">
+
         <br><br>
 
         <button id="btnAddTime">Ajouter</button>
@@ -191,11 +195,26 @@
             if (!state.enCours) return;
             let now = Date.now();
             let ecoule = now - state.depart + state.pauseTemps;
-
             afficher(ecoule);
-
             state.rafID = requestAnimationFrame(maj);
         }
+
+        // ------------------------------
+        // FONCTION : CALCUL TOTAL TEMPS
+        // ------------------------------
+
+        function getTotalMillis() {
+            let h = parseInt(document.getElementById("h").value) || 0;
+            let m = parseInt(document.getElementById("m").value) || 0;
+            let s = parseInt(document.getElementById("s").value) || 0;
+            let t = parseInt(document.getElementById("totalSec").value) || 0;
+
+            return h * 3600000 + m * 60000 + s * 1000 + t * 1000;
+        }
+
+        // ------------------------------
+        // DÉMARRER
+        // ------------------------------
 
         document.getElementById("btnStart").onclick = () => {
             if (!state.enCours) {
@@ -208,6 +227,10 @@
             }
         };
 
+        // ------------------------------
+        // ARRÊTER
+        // ------------------------------
+
         document.getElementById("btnStop").onclick = () => {
             if (state.enCours) {
                 state.enCours = false;
@@ -217,6 +240,10 @@
                 cancelAnimationFrame(state.rafID);
             }
         };
+
+        // ------------------------------
+        // RESET
+        // ------------------------------
 
         document.getElementById("btnReset").onclick = () => {
             state.enCours = false;
@@ -228,12 +255,12 @@
             afficher(0);
         };
 
-        document.getElementById("btnAddTime").onclick = () => {
-            let h = parseInt(document.getElementById("h").value) || 0;
-            let m = parseInt(document.getElementById("m").value) || 0;
-            let s = parseInt(document.getElementById("s").value) || 0;
+        // ------------------------------
+        // AJOUTER TEMPS
+        // ------------------------------
 
-            let ajout = h * 3600000 + m * 60000 + s * 1000;
+        document.getElementById("btnAddTime").onclick = () => {
+            let ajout = getTotalMillis();
 
             state.pauseTemps += ajout;
 
@@ -242,14 +269,12 @@
             afficher(state.pauseTemps);
         };
 
-        // ➖ Enlever du temps
+        // ------------------------------
+        // ENLEVER TEMPS
+        // ------------------------------
+
         document.getElementById("btnRemoveTime").onclick = () => {
-            let h = parseInt(document.getElementById("h").value) || 0;
-            let m = parseInt(document.getElementById("m").value) || 0;
-            let s = parseInt(document.getElementById("s").value) || 0;
-
-            let retirer = h * 3600000 + m * 60000 + s * 1000;
-
+            let retirer = getTotalMillis();
             let tempsActuel = (state.enCours ? (Date.now() - state.depart) : 0) + state.pauseTemps;
 
             if (retirer > tempsActuel) {
@@ -264,8 +289,16 @@
             afficher(state.pauseTemps);
         };
 
+        // ------------------------------
+        // THÈME
+        // ------------------------------
+
         document.getElementById("btnTheme").onclick = () =>
             document.body.classList.toggle("light");
+
+        // ------------------------------
+        // PLEIN ÉCRAN
+        // ------------------------------
 
         document.getElementById("btnFull").onclick = () => {
             if (!document.fullscreenElement) {
@@ -274,6 +307,10 @@
                 document.exitFullscreen();
             }
         };
+
+        // ------------------------------
+        // MODE MINIMAL (M)
+        // ------------------------------
 
         document.addEventListener("keydown", e => {
             if (e.key.toLowerCase() === "m") {
