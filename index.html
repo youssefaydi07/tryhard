@@ -1,325 +1,644 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Chronomètre Professionnel</title>
+    <meta charset="UTF-8" />
+    <title>Chronomètre Pro — Ultra Focus</title>
 
     <style>
+        /* ------------------------------
+           🟪 STYLE GLOBAL
+        ------------------------------ */
         :root {
             --bg: #0d0d0d;
             --fg: #eaeaea;
             --panel: #111;
-            --btn-bg: #1c1c1c;
-            --radius: 16px;
+            --accent: #4a90e2;
+            --radius: 14px;
+            --menu-bg: #111;
+            --menu-hover: #1c1c1c;
+            --menu-active: #333;
         }
 
         body.light {
             --bg: #f4f4f4;
-            --fg: #121212;
+            --fg: #111;
             --panel: #ffffff;
-            --btn-bg: #ececec;
+            --menu-bg: #ffffff;
+            --menu-hover: #ddd;
+            --menu-active: #ccc;
         }
 
         body {
-            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            background: var(--bg);
             color: var(--fg);
             font-family: "Inter", sans-serif;
-            text-align: center;
-            padding-top: 60px;
-            transition: 0.3s ease;
-            user-select: none;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
+        /* ------------------------------
+           🟦 MENU VERTICAL
+        ------------------------------ */
+        #menu {
+            width: 140px;
+            background: var(--menu-bg);
+            height: 100vh;
+            padding-top: 20px;
+            border-right: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu-item {
+            padding: 15px;
+            cursor: pointer;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.25s;
+            opacity: 0.85;
+        }
+
+        .menu-item:hover {
+            background: var(--menu-hover);
+            transform: translateX(5px);
+            opacity: 1;
+        }
+
+        .menu-item.active {
+            background: var(--menu-active);
+            font-weight: bold;
+            opacity: 1;
+        }
+
+        /* ------------------------------
+           🟥 CONTENU GLOBAL
+        ------------------------------ */
+        #content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        section.page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        section.page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ------------------------------
+           🟪 TITRES
+        ------------------------------ */
         h1 {
             font-weight: 300;
             font-size: 28px;
-            margin-bottom: 40px;
-            opacity: 0.9;
+            margin-bottom: 25px;
         }
 
-        #chrono {
-            font-size: 72px;
+        /* --------------------------------------------
+           🟩 STYLE DU CHRONOMÈTRE (ULTRA PREMIUM)
+        -------------------------------------------- */
+        #chronoDisplay {
+            font-size: 70px;
             font-family: "JetBrains Mono", monospace;
             background: var(--panel);
-            padding: 25px 50px;
+            padding: 30px 60px;
             border-radius: var(--radius);
             display: inline-block;
             margin-bottom: 30px;
-            box-shadow: 0 0 60px rgba(255,255,255,0.06);
-            transition: transform 0.08s ease, text-shadow 0.3s ease;
+            box-shadow: 0 0 40px rgba(255,255,255,0.07);
+            transition: transform 0.08s, text-shadow 0.2s;
+        }
+
+        .glow {
+            text-shadow: 0 0 22px rgba(255,255,255,0.25);
+            transform: scale(1.03);
+        }
+
+        /* Inputs */
+        .time-controls input {
+            width: 80px;
+            padding: 10px;
+            margin: 5px;
+            background: #1c1c1c;
+            border: 1px solid #333;
+            color: var(--fg);
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: center;
         }
 
         button {
-            font-size: 17px;
-            padding: 12px 30px;
+            padding: 12px 25px;
             margin: 8px;
-            border-radius: 12px;
+            border-radius: 10px;
             border: none;
             cursor: pointer;
-            background: var(--btn-bg);
-            color: var(--fg);
-            letter-spacing: 0.5px;
-            transition: 0.25s;
-        }
-
-        button:hover { transform: scale(1.08); filter: brightness(1.2); }
-        button:active { transform: scale(0.95); }
-
-        #btnStart { background-color: #27ae60; }
-        #btnStop { background-color: #c0392b; }
-        #btnReset { background-color: #7f8c8d; }
-        #btnFull { background-color: #f39c12; }
-        #btnTheme { background-color: #8e44ad; }
-        #btnAddTime { background-color: #2980b9; }
-        #btnRemoveTime { background-color: #d35400; }
-
-        #panel {
-            margin-top: 40px;
-            background: var(--panel);
-            padding: 25px;
-            border-radius: 14px;
-            width: 400px;
-            margin-left: auto;
-            margin-right: auto;
-            box-shadow: 0 0 30px rgba(255,255,255,0.04);
-        }
-
-        #panel input {
-            width: 70px;
-            padding: 8px;
             font-size: 16px;
-            text-align: center;
-            border-radius: 8px;
-            background: var(--btn-bg);
-            border: 1px solid #333;
-            color: var(--fg);
-            margin: 5px;
+            transition: 0.25s;
+            color: white;
         }
 
-        .minimal h1,
-        .minimal .buttons,
-        .minimal #panel {
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        #btnStart { background: #2ecc71; }
+        #btnStop { background: #e74c3c; }
+        #btnReset { background: #7f8c8d; }
+        #btnAdd { background: #3498db; }
+        #btnRemove { background: #d35400; }
+
+        /* ------------------------------
+           🟧 MODE FOCUS FULLSCREEN
+        ------------------------------ */
+        #focusOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            color: white;
             display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-family: "JetBrains Mono", monospace;
+            z-index: 9999;
+        }
+
+        #focusTimer {
+            font-size: 100px;
+            margin-bottom: 20px;
+        }
+
+        #exitFocus {
+            background: #e74c3c;
+        }
+
+        /* ------------------------------
+           🟨 MODE POMODORO
+        ------------------------------ */
+        #pomodoroDisplay {
+            font-size: 50px;
+            padding: 20px;
+        }
+
+        /* ------------------------------
+           🟫 STATS
+        ------------------------------ */
+        #statsTable {
+            background: var(--panel);
+            padding: 20px;
+            border-radius: var(--radius);
         }
     </style>
 </head>
 
 <body>
 
-    <h1>Chronomètre Professionnel</h1>
+    <!-- ▬▬▬▬▬▬▬▬▬▬▬ MENU ▬▬▬▬▬▬▬▬▬▬▬ -->
+    <aside id="menu">
+        <div class="menu-item active" data-target="page-chrono">🕒 Chrono</div>
+        <div class="menu-item" data-target="page-focus">🎯 Focus</div>
+        <div class="menu-item" data-target="page-pomodoro">🍅 Pomodoro</div>
+        <div class="menu-item" data-target="page-stats">📊 Stats</div>
+        <div class="menu-item" data-target="page-options">⚙️ Options</div>
+    </aside>
 
-    <div id="chrono">00:00:00.00</div>
+    <!-- ▬▬▬▬▬▬▬▬▬▬▬ CONTENU ▬▬▬▬▬▬▬▬▬▬▬ -->
+    <div id="content">
+        <!-- ██████████████████████████████████████████████ -->
+        <!--                🕒 PAGE CHRONO                   -->
+        <!-- ██████████████████████████████████████████████ -->
 
-    <div class="buttons">
-        <button id="btnStart">Démarrer</button>
-        <button id="btnStop">Arrêter</button>
-        <button id="btnReset">Reset</button>
-        <button id="btnFull">Plein écran</button>
-        <button id="btnTheme">Clair / Sombre</button>
-    </div>
+        <section id="page-chrono" class="page active">
+            <h1>Chronomètre Professionnel</h1>
 
-    <div id="panel">
-        <label><b>Ajouter / Enlever du temps :</b></label><br><br>
+            <div id="chronoDisplay">00:00:00.00</div>
 
-        <input id="h" type="number" min="0" placeholder="Heures">
-        <input id="m" type="number" min="0" max="59" placeholder="Minutes">
-        <input id="s" type="number" min="0" max="59" placeholder="Secondes">
-        <br>
-        <input id="totalSec" type="number" min="0" placeholder="Sec totales">
+            <div class="time-controls">
+                <input id="h" type="number" min="0" placeholder="Heures">
+                <input id="m" type="number" min="0" max="59" placeholder="Minutes">
+                <input id="s" type="number" min="0" max="59" placeholder="Secondes">
+                <input id="totalSec" type="number" min="0" placeholder="Sec totales">
+            </div>
 
-        <br><br>
+            <button id="btnStart">Démarrer</button>
+            <button id="btnStop">Arrêter</button>
+            <button id="btnReset">Reset</button>
+            <button id="btnAdd">Ajouter</button>
+            <button id="btnRemove">Enlever</button>
+        </section>
 
-        <button id="btnAddTime">Ajouter</button>
-        <button id="btnRemoveTime">Enlever</button>
-    </div>
 
-    <audio id="startSound">
-        <source src="data:audio/mp3;base64,//uQZAAA..." type="audio/mp3">
-    </audio>
 
+        <!-- ██████████████████████████████████████████████ -->
+        <!--                🎯 PAGE FOCUS                    -->
+        <!-- ██████████████████████████████████████████████ -->
+
+        <section id="page-focus" class="page">
+            <h1>Mode Focus</h1>
+
+            <label>Durée (minutes) :</label><br>
+            <input id="focusMinutes" type="number" min="1" value="25" style="padding:10px;width:100px;text-align:center;border-radius:8px;"><br><br>
+
+            <button id="btnStartFocus" style="background:#27ae60;">Lancer une session Focus</button>
+        </section>
+
+
+        <!-- ██████████████████████████████████████████████ -->
+        <!--             OVERLAY FOCUS (FULLSCREEN)          -->
+        <!-- ██████████████████████████████████████████████ -->
+
+        <div id="focusOverlay">
+            <div id="focusTimer">25:00</div>
+            <button id="exitFocus">Quitter le mode Focus</button>
+        </div>
+        <!-- ██████████████████████████████████████████████ -->
+        <!--                🍅 PAGE POMODORO                -->
+        <!-- ██████████████████████████████████████████████ -->
+
+        <section id="page-pomodoro" class="page">
+            <h1>Mode Pomodoro</h1>
+
+            <div style="margin-bottom:10px;">
+                Travail (min) :
+                <input id="pomoWork" type="number" value="25" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+            </div>
+
+            <div style="margin-bottom:10px;">
+                Pause (min) :
+                <input id="pomoBreak" type="number" value="5" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+            </div>
+
+            <div style="margin-bottom:10px;">
+                Longue pause (min) :
+                <input id="pomoLong" type="number" value="15" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+            </div>
+
+            <div style="margin-bottom:10px;">
+                Cycles :
+                <input id="pomoCycles" type="number" value="4" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+            </div>
+
+            <button id="startPomodoro" style="background:#e67e22;">Démarrer Pomodoro</button>
+
+            <h2 style="margin-top:25px;">Temps restant :</h2>
+            <div id="pomodoroDisplay">--:--</div>
+
+            <div id="pomodoroStatus" style="opacity:0.8;font-size:18px;margin-top:10px;"></div>
+        </section>
+
+
+
+        <!-- ██████████████████████████████████████████████ -->
+        <!--                📊 PAGE STATISTIQUES            -->
+        <!-- ██████████████████████████████████████████████ -->
+
+        <section id="page-stats" class="page">
+            <h1>Statistiques</h1>
+
+            <div id="statsSummary" style="
+                background:var(--panel);
+                padding:20px;
+                border-radius:var(--radius);
+                margin-bottom:20px;">
+                <p><b>Total travaillé aujourd'hui :</b> <span id="todayTotal">0 min</span></p>
+                <p><b>Total cette semaine :</b> <span id="weekTotal">0 min</span></p>
+                <p><b>Session la plus longue :</b> <span id="bestSession">0 min</span></p>
+            </div>
+
+            <h2>Historique des sessions</h2>
+
+            <table id="statsTable" style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#222;">
+                        <th style="padding:10px;">Date</th>
+                        <th style="padding:10px;">Durée</th>
+                    </tr>
+                </thead>
+
+                <tbody id="statsBody">
+                    <!-- Rempli en JS -->
+                </tbody>
+            </table>
+        </section>
+
+
+
+        <!-- ██████████████████████████████████████████████ -->
+        <!--                ⚙️ PAGE OPTIONS                 -->
+        <!-- ██████████████████████████████████████████████ -->
+
+        <section id="page-options" class="page">
+            <h1>Options</h1>
+
+            <button id="toggleTheme" style="background:#8e44ad;">Mode clair / sombre</button>
+
+            <br><br>
+
+            <button id="resetStats" style="background:#c0392b;">Reset statistiques</button>
+
+            <p style="opacity:0.7;margin-top:20px;font-size:14px;">
+                Toutes les données sont stockées en local sur ton appareil via localStorage.
+            </p>
+        </section>
     <script>
-        const chronoEl = document.getElementById("chrono");
-        const startSound = document.getElementById("startSound");
+    /* =======================================================
+       🟦 MENU VERTICAL — Navigation entre pages
+    ======================================================= */
+    const pages = document.querySelectorAll(".page");
+    const menuItems = document.querySelectorAll(".menu-item");
 
-        const state = {
-            depart: null,
-            pauseTemps: 0,
-            enCours: false,
-            rafID: null
-        };
+    menuItems.forEach(item => {
+        item.addEventListener("click", () => {
+            menuItems.forEach(i => i.classList.remove("active"));
+            item.classList.add("active");
 
-        function saveState() {
-            localStorage.setItem("chronoState", JSON.stringify(state));
-        }
-
-        function loadState() {
-            let s = JSON.parse(localStorage.getItem("chronoState"));
-            if (!s) return;
-
-            state.depart     = s.depart;
-            state.pauseTemps = s.pauseTemps;
-            state.enCours    = s.enCours;
-
-            if (state.enCours) {
-                state.rafID = requestAnimationFrame(maj);
-            } else {
-                afficher(state.pauseTemps);
-            }
-        }
-
-        function formatTime(ms) {
-            let h = Math.floor(ms / 3600000);
-            let m = Math.floor((ms / 60000) % 60);
-            let s = Math.floor((ms / 1000) % 60);
-            let c = Math.floor((ms % 1000) / 10);
-
-            return `${String(h).padStart(2,'0')}:` +
-                   `${String(m).padStart(2,'0')}:` +
-                   `${String(s).padStart(2,'0')}.` +
-                   `${String(c).padStart(2,'0')}`;
-        }
-
-        function afficher(ms) {
-            chronoEl.textContent = formatTime(ms);
-
-            chronoEl.style.textShadow = "0 0 18px rgba(255,255,255,0.20)";
-            chronoEl.style.transform = "scale(1.04)";
-
-            setTimeout(() => {
-                chronoEl.style.textShadow = "0 0 0 rgba(0,0,0,0)";
-                chronoEl.style.transform = "scale(1)";
-            }, 90);
-        }
-
-        function maj() {
-            if (!state.enCours) return;
-            let now = Date.now();
-            let ecoule = now - state.depart + state.pauseTemps;
-            afficher(ecoule);
-            state.rafID = requestAnimationFrame(maj);
-        }
-
-        // ------------------------------
-        // FONCTION : CALCUL TOTAL TEMPS
-        // ------------------------------
-
-        function getTotalMillis() {
-            let h = parseInt(document.getElementById("h").value) || 0;
-            let m = parseInt(document.getElementById("m").value) || 0;
-            let s = parseInt(document.getElementById("s").value) || 0;
-            let t = parseInt(document.getElementById("totalSec").value) || 0;
-
-            return h * 3600000 + m * 60000 + s * 1000 + t * 1000;
-        }
-
-        // ------------------------------
-        // DÉMARRER
-        // ------------------------------
-
-        document.getElementById("btnStart").onclick = () => {
-            if (!state.enCours) {
-                state.enCours = true;
-                state.depart = Date.now();
-                saveState();
-                startSound.play();
-                if (navigator.vibrate) navigator.vibrate(100);
-                state.rafID = requestAnimationFrame(maj);
-            }
-        };
-
-        // ------------------------------
-        // ARRÊTER
-        // ------------------------------
-
-        document.getElementById("btnStop").onclick = () => {
-            if (state.enCours) {
-                state.enCours = false;
-                state.pauseTemps += Date.now() - state.depart;
-                if (navigator.vibrate) navigator.vibrate([80,40,80]);
-                saveState();
-                cancelAnimationFrame(state.rafID);
-            }
-        };
-
-        // ------------------------------
-        // RESET
-        // ------------------------------
-
-        document.getElementById("btnReset").onclick = () => {
-            state.enCours = false;
-            cancelAnimationFrame(state.rafID);
-            state.pauseTemps = 0;
-            state.depart = null;
-            if (navigator.vibrate) navigator.vibrate(200);
-            saveState();
-            afficher(0);
-        };
-
-        // ------------------------------
-        // AJOUTER TEMPS
-        // ------------------------------
-
-        document.getElementById("btnAddTime").onclick = () => {
-            let ajout = getTotalMillis();
-
-            state.pauseTemps += ajout;
-
-            if (state.enCours) state.depart = Date.now();
-            saveState();
-            afficher(state.pauseTemps);
-        };
-
-        // ------------------------------
-        // ENLEVER TEMPS
-        // ------------------------------
-
-        document.getElementById("btnRemoveTime").onclick = () => {
-            let retirer = getTotalMillis();
-            let tempsActuel = (state.enCours ? (Date.now() - state.depart) : 0) + state.pauseTemps;
-
-            if (retirer > tempsActuel) {
-                state.pauseTemps = 0;
-                if (state.enCours) state.depart = Date.now();
-            } else {
-                state.pauseTemps -= retirer;
-                if (state.enCours) state.depart = Date.now();
-            }
-
-            saveState();
-            afficher(state.pauseTemps);
-        };
-
-        // ------------------------------
-        // THÈME
-        // ------------------------------
-
-        document.getElementById("btnTheme").onclick = () =>
-            document.body.classList.toggle("light");
-
-        // ------------------------------
-        // PLEIN ÉCRAN
-        // ------------------------------
-
-        document.getElementById("btnFull").onclick = () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
-        };
-
-        // ------------------------------
-        // MODE MINIMAL (M)
-        // ------------------------------
-
-        document.addEventListener("keydown", e => {
-            if (e.key.toLowerCase() === "m") {
-                document.body.classList.toggle("minimal");
-            }
+            const target = item.getAttribute("data-target");
+            pages.forEach(p => p.classList.remove("active"));
+            document.getElementById(target).classList.add("active");
         });
+    });
 
-        loadState();
+    /* =======================================================
+       🟩 CHRONOMÈTRE PRO
+    ======================================================= */
+    let chronoDisplay = document.getElementById("chronoDisplay");
+
+    let running = false;
+    let startTime = null;
+    let storedTime = 0;
+    let rafID = null;
+
+    function formatTime(ms) {
+        let h = Math.floor(ms / 3600000);
+        let m = Math.floor((ms / 60000) % 60);
+        let s = Math.floor((ms / 1000) % 60);
+        let c = Math.floor((ms % 1000) / 10);
+
+        return (
+            String(h).padStart(2, "0") + ":" +
+            String(m).padStart(2, "0") + ":" +
+            String(s).padStart(2, "0") + "." +
+            String(c).padStart(2, "0")
+        );
+    }
+
+    function animateGlow() {
+        chronoDisplay.classList.add("glow");
+        setTimeout(() => chronoDisplay.classList.remove("glow"), 200);
+    }
+
+    function chronoUpdate() {
+        if (!running) return;
+        let now = Date.now();
+        let elapsed = (now - startTime) + storedTime;
+        chronoDisplay.textContent = formatTime(elapsed);
+        animateGlow();
+        rafID = requestAnimationFrame(chronoUpdate);
+    }
+
+    document.getElementById("btnStart").onclick = () => {
+        if (!running) {
+            running = true;
+            startTime = Date.now();
+            rafID = requestAnimationFrame(chronoUpdate);
+        }
+    };
+
+    document.getElementById("btnStop").onclick = () => {
+        if (running) {
+            running = false;
+            storedTime += Date.now() - startTime;
+            cancelAnimationFrame(rafID);
+        }
+    };
+
+    document.getElementById("btnReset").onclick = () => {
+        running = false;
+        storedTime = 0;
+        chronoDisplay.textContent = "00:00:00.00";
+        cancelAnimationFrame(rafID);
+    };
+
+    function getMillis() {
+        let h = parseInt(document.getElementById("h").value) || 0;
+        let m = parseInt(document.getElementById("m").value) || 0;
+        let s = parseInt(document.getElementById("s").value) || 0;
+        let t = parseInt(document.getElementById("totalSec").value) || 0;
+
+        return h * 3600000 + m * 60000 + s * 1000 + t * 1000;
+    }
+
+    document.getElementById("btnAdd").onclick = () => {
+        let add = getMillis();
+        storedTime += add;
+        chronoDisplay.textContent = formatTime(storedTime);
+        animateGlow();
+    };
+
+    document.getElementById("btnRemove").onclick = () => {
+        let remove = getMillis();
+        storedTime = Math.max(0, storedTime - remove);
+        chronoDisplay.textContent = formatTime(storedTime);
+        animateGlow();
+    };
+
+    /* =======================================================
+       🎯 MODE FOCUS
+    ======================================================= */
+    const focusMinutes = document.getElementById("focusMinutes");
+    const btnStartFocus = document.getElementById("btnStartFocus");
+    const focusOverlay = document.getElementById("focusOverlay");
+    const focusTimer = document.getElementById("focusTimer");
+    const exitFocusBtn = document.getElementById("exitFocus");
+
+    let focusInterval = null;
+    let focusRemaining = 0;
+
+    function updateFocusDisplay() {
+        let m = Math.floor(focusRemaining / 60);
+        let s = focusRemaining % 60;
+        focusTimer.textContent = 
+            String(m).padStart(2, "0") + ":" +
+            String(s).padStart(2, "0");
+    }
+
+    btnStartFocus.onclick = () => {
+        focusRemaining = parseInt(focusMinutes.value) * 60;
+        updateFocusDisplay();
+
+        focusOverlay.style.display = "flex";
+        document.body.style.overflow = "hidden";
+
+        focusInterval = setInterval(() => {
+            focusRemaining--;
+            updateFocusDisplay();
+
+            if (focusRemaining <= 0) {
+                clearInterval(focusInterval);
+                alert("🔥 Session Focus terminée !");
+                focusOverlay.style.display = "none";
+                document.body.style.overflow = "auto";
+            }
+        }, 1000);
+    };
+
+    exitFocusBtn.onclick = () => {
+        if (confirm("Quitter le mode Focus ?")) {
+            clearInterval(focusInterval);
+            focusOverlay.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+    };
+
+
+    /* =======================================================
+       🍅 MODE POMODORO
+    ======================================================= */
+    const pomoWork = document.getElementById("pomoWork");
+    const pomoBreak = document.getElementById("pomoBreak");
+    const pomoLong = document.getElementById("pomoLong");
+    const pomoCycles = document.getElementById("pomoCycles");
+    const pomodoroDisplay = document.getElementById("pomodoroDisplay");
+    const pomodoroStatus = document.getElementById("pomodoroStatus");
+
+    let pomoTimer = null;
+    let pomoRemaining = 0;
+    let currentCycle = 1;
+    let phase = "work";
+
+    function updatePomoDisplay() {
+        let m = Math.floor(pomoRemaining / 60);
+        let s = pomoRemaining % 60;
+        pomodoroDisplay.textContent =
+            String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+
+    document.getElementById("startPomodoro").onclick = () => {
+        currentCycle = 1;
+        phase = "work";
+        startPomodoroPhase();
+    };
+
+    function startPomodoroPhase() {
+        if (phase === "work") {
+            pomoRemaining = parseInt(pomoWork.value) * 60;
+            pomodoroStatus.textContent = "Travail 🔥 (cycle " + currentCycle + ")";
+        } 
+        else if (phase === "break") {
+            pomoRemaining = parseInt(pomoBreak.value) * 60;
+            pomodoroStatus.textContent = "Pause 😌";
+        }
+        else if (phase === "long") {
+            pomoRemaining = parseInt(pomoLong.value) * 60;
+            pomodoroStatus.textContent = "Longue pause 🧘";
+        }
+
+        updatePomoDisplay();
+
+        if (pomoTimer) clearInterval(pomoTimer);
+
+        pomoTimer = setInterval(() => {
+            pomoRemaining--;
+            updatePomoDisplay();
+
+            if (pomoRemaining <= 0) {
+                clearInterval(pomoTimer);
+
+                if (phase === "work") {
+                    if (currentCycle % parseInt(pomoCycles.value) === 0) {
+                        phase = "long";
+                    } else {
+                        phase = "break";
+                    }
+                } else if (phase === "break" || phase === "long") {
+                    currentCycle++;
+                    phase = "work";
+                }
+
+                startPomodoroPhase();
+            }
+        }, 1000);
+    }
+
+
+    /* =======================================================
+       📊 STATISTIQUES
+    ======================================================= */
+    let stats = JSON.parse(localStorage.getItem("stats") || "[]");
+
+    function saveStats() {
+        localStorage.setItem("stats", JSON.stringify(stats));
+    }
+
+    function updateStatsUI() {
+        let today = new Date().toDateString();
+        let todayTotal = stats
+            .filter(s => new Date(s.date).toDateString() === today)
+            .reduce((acc, s) => acc + s.minutes, 0);
+
+        document.getElementById("todayTotal").textContent = todayTotal + " min";
+
+        let weekTotal = stats
+            .filter(s => {
+                let d = new Date(s.date);
+                return d >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            })
+            .reduce((acc, s) => acc + s.minutes, 0);
+
+        document.getElementById("weekTotal").textContent = weekTotal + " min";
+
+        let best = stats.reduce((max, s) => Math.max(max, s.minutes), 0);
+        document.getElementById("bestSession").textContent = best + " min";
+
+        let tbody = document.getElementById("statsBody");
+        tbody.innerHTML = "";
+
+        stats.forEach(s => {
+            let tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td style="padding:10px;">${new Date(s.date).toLocaleString()}</td>
+                <td style="padding:10px;">${s.minutes} min</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    updateStatsUI();
+
+    document.getElementById("resetStats").onclick = () => {
+        if (confirm("Supprimer toutes les stats ?")) {
+            stats = [];
+            saveStats();
+            updateStatsUI();
+        }
+    };
+
+    /* =======================================================
+       🌙 OPTIONS — Thème clair / sombre
+    ======================================================= */
+    const toggleTheme = document.getElementById("toggleTheme");
+
+    toggleTheme.onclick = () => {
+        document.body.classList.toggle("light");
+    };
     </script>
-
 </body>
 </html>
