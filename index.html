@@ -16,7 +16,7 @@
             --radius: 14px;
             --menu-bg: #111;
             --menu-hover: #1c1c1c;
-            --menu-active: #333;
+            --menu-active: #4a90e2;
         }
 
         body.light {
@@ -25,7 +25,7 @@
             --panel: #ffffff;
             --menu-bg: #ffffff;
             --menu-hover: #ddd;
-            --menu-active: #ccc;
+            --menu-active: #4a90e2;
         }
 
         body {
@@ -34,74 +34,61 @@
             background: var(--bg);
             color: var(--fg);
             font-family: "Inter", sans-serif;
-            display: flex;
             height: 100vh;
-            overflow: hidden;
         }
 
         /* ------------------------------
-           🟦 MENU VERTICAL — CENTRÉ PREMIUM
+           🟦 NAVBAR HORIZONTALE — OPTION C (CAPSULES)
         ------------------------------ */
-        #menu {
-            width: 160px;
-            background: var(--menu-bg);
-            height: 100vh;
-            border-right: 1px solid #222;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: center;  /* centre vertical */
-            align-items: center;      /* centre horizontal */
-            gap: 15px;
-        }
-
-        .menu-item {
-            width: 130px;
-            padding: 14px 10px;
-            text-align: center;
-
-            background: var(--panel);
-            border-radius: 12px;
-
+        #navbar {
+            width: 100%;
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 8px;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 25px;
+        }
 
+        .nav-item {
+            padding: 10px 22px;
+            background: var(--panel);
+            border-radius: 999px;
             cursor: pointer;
-            font-size: 16px;
 
+            color: var(--fg);
+            font-size: 16px;
+            font-weight: 500;
+
+            border: 1px solid #222;
             opacity: 0.85;
             transition: 0.25s ease;
         }
 
-        .menu-item:hover {
+        .nav-item:hover {
+            transform: scale(1.12);
             background: var(--menu-hover);
-            transform: translateX(8px) scale(1.08); /* effet satisfaisant */
             opacity: 1;
         }
 
-        .menu-item.active {
-            background: var(--menu-active);
-            transform: scale(1.05);
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: scale(1.08);
             opacity: 1;
-            font-weight: bold;
         }
 
         /* ------------------------------
-           🟥 CONTENU CENTRÉ PREMIUM
+           🟧 CONTAINER PREMIUM
         ------------------------------ */
         #content {
-            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
             padding: 40px;
 
-            /* éloigner du menu */
-            margin-left: 40px;
-
-            /* centrage global */
-            max-width: 900px;
-            margin-right: auto;
-            margin-left: auto;
+            background: var(--panel);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255,255,255,0.05);
         }
 
         /* ------------------------------
@@ -128,6 +115,7 @@
             font-weight: 300;
             font-size: 28px;
             margin-bottom: 25px;
+            text-align: center;
         }
 
         /* --------------------------------------------
@@ -136,7 +124,7 @@
         #chronoDisplay {
             font-size: 70px;
             font-family: "JetBrains Mono", monospace;
-            background: var(--panel);
+            background: #000;
             padding: 30px 60px;
             border-radius: var(--radius);
             display: inline-block;
@@ -162,9 +150,6 @@
             text-align: center;
         }
 
-        /* ------------------------------
-           🟧 BOUTONS
-        ------------------------------ */
         button {
             padding: 12px 25px;
             margin: 8px;
@@ -215,11 +200,12 @@
         }
 
         /* ------------------------------
-           🟨 MODE POMODORO
+           🟨 POMODORO
         ------------------------------ */
         #pomodoroDisplay {
             font-size: 50px;
             padding: 20px;
+            text-align: center;
         }
 
         /* ------------------------------
@@ -229,175 +215,196 @@
             background: var(--panel);
             padding: 20px;
             border-radius: var(--radius);
+            width: 100%;
+            border-collapse: collapse;
         }
     </style>
 </head>
 <body>
 
-    <!-- ▬▬▬▬▬▬▬▬▬▬▬ MENU ▬▬▬▬▬▬▬▬▬▬▬ -->
-    <aside id="menu">
-        <div class="menu-item active" data-target="page-chrono">🕒 Chrono</div>
-        <div class="menu-item" data-target="page-focus">🎯 Focus</div>
-        <div class="menu-item" data-target="page-pomodoro">🍅 Pomodoro</div>
-        <div class="menu-item" data-target="page-stats">📊 Stats</div>
-        <div class="menu-item" data-target="page-options">⚙️ Options</div>
-    </aside>
+    <!-- ██████████████████████████████████████████████ -->
+    <!--          NAVBAR HORIZONTALE CENTRÉE            -->
+    <!-- ██████████████████████████████████████████████ -->
 
-    <!-- ▬▬▬▬▬▬▬▬▬▬▬ CONTENU ▬▬▬▬▬▬▬▬▬▬▬ -->
+    <nav id="navbar">
+        <div class="nav-item active" data-target="page-chrono">Chrono</div>
+        <div class="nav-item" data-target="page-focus">Focus</div>
+        <div class="nav-item" data-target="page-pomodoro">Pomodoro</div>
+        <div class="nav-item" data-target="page-stats">Stats</div>
+        <div class="nav-item" data-target="page-options">Options</div>
+    </nav>
+
+
+    <!-- ██████████████████████████████████████████████ -->
+    <!--           CONTAINER PREMIUM CENTRÉ             -->
+    <!-- ██████████████████████████████████████████████ -->
+
     <div id="content">
         <!-- ██████████████████████████████████████████████ -->
-        <!--                🕒 PAGE CHRONO                   -->
+        <!--                  PAGE CHRONO                   -->
         <!-- ██████████████████████████████████████████████ -->
 
         <section id="page-chrono" class="page active">
             <h1>Chronomètre Professionnel</h1>
 
-            <div id="chronoDisplay">00:00:00.00</div>
+            <div style="text-align:center;">
+                <div id="chronoDisplay">00:00:00.00</div>
+            </div>
 
-            <div class="time-controls">
+            <div class="time-controls" style="text-align:center;">
                 <input id="h" type="number" min="0" placeholder="Heures">
                 <input id="m" type="number" min="0" max="59" placeholder="Minutes">
                 <input id="s" type="number" min="0" max="59" placeholder="Secondes">
                 <input id="totalSec" type="number" min="0" placeholder="Sec totales">
             </div>
 
-            <button id="btnStart">Démarrer</button>
-            <button id="btnStop">Arrêter</button>
-            <button id="btnReset">Reset</button>
-            <button id="btnAdd">Ajouter</button>
-            <button id="btnRemove">Enlever</button>
+            <div style="text-align:center;">
+                <button id="btnStart">Démarrer</button>
+                <button id="btnStop">Arrêter</button>
+                <button id="btnReset">Reset</button>
+                <button id="btnAdd">Ajouter</button>
+                <button id="btnRemove">Enlever</button>
+            </div>
         </section>
 
 
 
         <!-- ██████████████████████████████████████████████ -->
-        <!--                🎯 PAGE FOCUS                    -->
+        <!--                  PAGE FOCUS                    -->
         <!-- ██████████████████████████████████████████████ -->
 
         <section id="page-focus" class="page">
             <h1>Mode Focus</h1>
 
-            <label>Durée (minutes) :</label><br>
-            <input id="focusMinutes" type="number" min="1" value="25" style="padding:10px;width:100px;text-align:center;border-radius:8px;"><br><br>
-
-            <button id="btnStartFocus" style="background:#27ae60;">Lancer une session Focus</button>
+            <div style="text-align:center;">
+                <label>Durée (minutes) :</label><br><br>
+                <input id="focusMinutes" type="number" min="1" value="25"
+                       style="padding:10px;width:100px;text-align:center;border-radius:8px;">
+                <br><br>
+                <button id="btnStartFocus" style="background:#27ae60;">Lancer une session Focus</button>
+            </div>
         </section>
 
 
         <!-- ██████████████████████████████████████████████ -->
-        <!--             OVERLAY FOCUS (FULLSCREEN)          -->
+        <!--              OVERLAY FULLSCREEN FOCUS          -->
         <!-- ██████████████████████████████████████████████ -->
 
         <div id="focusOverlay">
             <div id="focusTimer">25:00</div>
             <button id="exitFocus">Quitter le mode Focus</button>
         </div>
+
+
+
         <!-- ██████████████████████████████████████████████ -->
-        <!--                🍅 PAGE POMODORO                -->
+        <!--                PAGE POMODORO                   -->
         <!-- ██████████████████████████████████████████████ -->
 
         <section id="page-pomodoro" class="page">
             <h1>Mode Pomodoro</h1>
 
-            <div style="margin-bottom:10px;">
+            <div style="text-align:center;">
                 Travail (min) :
-                <input id="pomoWork" type="number" value="25" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
-            </div>
+                <input id="pomoWork" type="number" value="25" min="1"
+                       style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+                <br><br>
 
-            <div style="margin-bottom:10px;">
                 Pause (min) :
-                <input id="pomoBreak" type="number" value="5" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
-            </div>
+                <input id="pomoBreak" type="number" value="5" min="1"
+                       style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+                <br><br>
 
-            <div style="margin-bottom:10px;">
                 Longue pause (min) :
-                <input id="pomoLong" type="number" value="15" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
-            </div>
+                <input id="pomoLong" type="number" value="15" min="1"
+                       style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+                <br><br>
 
-            <div style="margin-bottom:10px;">
                 Cycles :
-                <input id="pomoCycles" type="number" value="4" min="1" style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+                <input id="pomoCycles" type="number" value="4" min="1"
+                       style="width:60px;padding:5px;border-radius:8px;text-align:center;">
+                <br><br>
+
+                <button id="startPomodoro" style="background:#e67e22;">Démarrer Pomodoro</button>
+
+                <h2 style="margin-top:25px;">Temps restant :</h2>
+                <div id="pomodoroDisplay">--:--</div>
+
+                <div id="pomodoroStatus"
+                     style="opacity:0.8;font-size:18px;margin-top:10px;"></div>
             </div>
-
-            <button id="startPomodoro" style="background:#e67e22;">Démarrer Pomodoro</button>
-
-            <h2 style="margin-top:25px;">Temps restant :</h2>
-            <div id="pomodoroDisplay">--:--</div>
-
-            <div id="pomodoroStatus" style="opacity:0.8;font-size:18px;margin-top:10px;"></div>
         </section>
 
 
 
         <!-- ██████████████████████████████████████████████ -->
-        <!--                📊 PAGE STATISTIQUES            -->
+        <!--                   PAGE STATS                   -->
         <!-- ██████████████████████████████████████████████ -->
 
         <section id="page-stats" class="page">
             <h1>Statistiques</h1>
 
-            <div id="statsSummary" style="
-                background:var(--panel);
-                padding:20px;
-                border-radius:var(--radius);
-                margin-bottom:20px;">
+            <div id="statsSummary"
+                 style="background:#000;padding:20px;border-radius:var(--radius);
+                 margin-bottom:20px;text-align:center;">
                 <p><b>Total travaillé aujourd'hui :</b> <span id="todayTotal">0 min</span></p>
                 <p><b>Total cette semaine :</b> <span id="weekTotal">0 min</span></p>
                 <p><b>Session la plus longue :</b> <span id="bestSession">0 min</span></p>
             </div>
 
-            <h2>Historique des sessions</h2>
+            <h2 style="text-align:center;">Historique des sessions</h2>
 
-            <table id="statsTable" style="width:100%;border-collapse:collapse;">
+            <table id="statsTable">
                 <thead>
                     <tr style="background:#222;">
                         <th style="padding:10px;">Date</th>
                         <th style="padding:10px;">Durée</th>
                     </tr>
                 </thead>
-
-                <tbody id="statsBody">
-                    <!-- Rempli en JS -->
-                </tbody>
+                <tbody id="statsBody"></tbody>
             </table>
         </section>
 
 
 
         <!-- ██████████████████████████████████████████████ -->
-        <!--                ⚙️ PAGE OPTIONS                 -->
+        <!--                  PAGE OPTIONS                  -->
         <!-- ██████████████████████████████████████████████ -->
 
         <section id="page-options" class="page">
             <h1>Options</h1>
 
-            <button id="toggleTheme" style="background:#8e44ad;">Mode clair / sombre</button>
+            <div style="text-align:center;">
+                <button id="toggleTheme" style="background:#8e44ad;">Mode clair / sombre</button>
+                <br><br>
+                <button id="resetStats" style="background:#c0392b;">Reset statistiques</button>
 
-            <br><br>
-
-            <button id="resetStats" style="background:#c0392b;">Reset statistiques</button>
-
-            <p style="opacity:0.7;margin-top:20px;font-size:14px;">
-                Toutes les données sont stockées en local sur ton appareil via localStorage.
-            </p>
+                <p style="opacity:0.7;margin-top:20px;font-size:14px;">
+                    Toutes les données sont stockées localement sur votre appareil.
+                </p>
+            </div>
         </section>
     <script>
     /* =======================================================
-       🟦 MENU VERTICAL — Navigation entre pages
+       🟦 NAVIGATION — NAVBAR HORIZONTALE
     ======================================================= */
     const pages = document.querySelectorAll(".page");
-    const menuItems = document.querySelectorAll(".menu-item");
+    const navItems = document.querySelectorAll(".nav-item");
 
-    menuItems.forEach(item => {
+    navItems.forEach(item => {
         item.addEventListener("click", () => {
-            menuItems.forEach(i => i.classList.remove("active"));
+
+            // Changer l'onglet actif
+            navItems.forEach(i => i.classList.remove("active"));
             item.classList.add("active");
 
+            // Afficher la page correspondante
             const target = item.getAttribute("data-target");
             pages.forEach(p => p.classList.remove("active"));
             document.getElementById(target).classList.add("active");
         });
     });
+
 
     /* =======================================================
        🟩 CHRONOMÈTRE PRO
@@ -423,25 +430,28 @@
         );
     }
 
-    function animateGlow() {
+    function glow() {
         chronoDisplay.classList.add("glow");
         setTimeout(() => chronoDisplay.classList.remove("glow"), 200);
     }
 
-    function chronoUpdate() {
+    function updateChrono() {
         if (!running) return;
+
         let now = Date.now();
         let elapsed = (now - startTime) + storedTime;
+
         chronoDisplay.textContent = formatTime(elapsed);
-        animateGlow();
-        rafID = requestAnimationFrame(chronoUpdate);
+        glow();
+
+        rafID = requestAnimationFrame(updateChrono);
     }
 
     document.getElementById("btnStart").onclick = () => {
         if (!running) {
             running = true;
             startTime = Date.now();
-            rafID = requestAnimationFrame(chronoUpdate);
+            rafID = requestAnimationFrame(updateChrono);
         }
     };
 
@@ -470,21 +480,21 @@
     }
 
     document.getElementById("btnAdd").onclick = () => {
-        let add = getMillis();
-        storedTime += add;
+        storedTime += getMillis();
         chronoDisplay.textContent = formatTime(storedTime);
-        animateGlow();
+        glow();
     };
 
     document.getElementById("btnRemove").onclick = () => {
-        let remove = getMillis();
-        storedTime = Math.max(0, storedTime - remove);
+        storedTime = Math.max(0, storedTime - getMillis());
         chronoDisplay.textContent = formatTime(storedTime);
-        animateGlow();
+        glow();
     };
 
+
+
     /* =======================================================
-       🎯 MODE FOCUS
+       🎯 MODE FOCUS FULLSCREEN
     ======================================================= */
     const focusMinutes = document.getElementById("focusMinutes");
     const btnStartFocus = document.getElementById("btnStartFocus");
@@ -498,13 +508,14 @@
     function updateFocusDisplay() {
         let m = Math.floor(focusRemaining / 60);
         let s = focusRemaining % 60;
-        focusTimer.textContent = 
+        focusTimer.textContent =
             String(m).padStart(2, "0") + ":" +
             String(s).padStart(2, "0");
     }
 
     btnStartFocus.onclick = () => {
         focusRemaining = parseInt(focusMinutes.value) * 60;
+
         updateFocusDisplay();
 
         focusOverlay.style.display = "flex";
@@ -524,12 +535,13 @@
     };
 
     exitFocusBtn.onclick = () => {
-        if (confirm("Quitter le mode Focus ?")) {
+        if (confirm("Quitter la session Focus ?")) {
             clearInterval(focusInterval);
             focusOverlay.style.display = "none";
             document.body.style.overflow = "auto";
         }
     };
+
 
 
     /* =======================================================
@@ -539,6 +551,7 @@
     const pomoBreak = document.getElementById("pomoBreak");
     const pomoLong = document.getElementById("pomoLong");
     const pomoCycles = document.getElementById("pomoCycles");
+
     const pomodoroDisplay = document.getElementById("pomodoroDisplay");
     const pomodoroStatus = document.getElementById("pomodoroStatus");
 
@@ -564,20 +577,17 @@
         if (phase === "work") {
             pomoRemaining = parseInt(pomoWork.value) * 60;
             pomodoroStatus.textContent = "Travail 🔥 (cycle " + currentCycle + ")";
-        } 
-        else if (phase === "break") {
+        } else if (phase === "break") {
             pomoRemaining = parseInt(pomoBreak.value) * 60;
             pomodoroStatus.textContent = "Pause 😌";
-        }
-        else if (phase === "long") {
+        } else if (phase === "long") {
             pomoRemaining = parseInt(pomoLong.value) * 60;
             pomodoroStatus.textContent = "Longue pause 🧘";
         }
 
         updatePomoDisplay();
 
-        if (pomoTimer) clearInterval(pomoTimer);
-
+        clearInterval(pomoTimer);
         pomoTimer = setInterval(() => {
             pomoRemaining--;
             updatePomoDisplay();
@@ -591,7 +601,7 @@
                     } else {
                         phase = "break";
                     }
-                } else if (phase === "break" || phase === "long") {
+                } else {
                     currentCycle++;
                     phase = "work";
                 }
@@ -613,6 +623,7 @@
 
     function updateStatsUI() {
         let today = new Date().toDateString();
+
         let todayTotal = stats
             .filter(s => new Date(s.date).toDateString() === today)
             .reduce((acc, s) => acc + s.minutes, 0);
@@ -638,8 +649,7 @@
             let tr = document.createElement("tr");
             tr.innerHTML = `
                 <td style="padding:10px;">${new Date(s.date).toLocaleString()}</td>
-                <td style="padding:10px;">${s.minutes} min</td>
-            `;
+                <td style="padding:10px;">${s.minutes} min</td>`;
             tbody.appendChild(tr);
         });
     }
@@ -654,15 +664,13 @@
         }
     };
 
-    /* =======================================================
-       🌙 OPTIONS — Thème clair / sombre
-    ======================================================= */
-    const toggleTheme = document.getElementById("toggleTheme");
 
-    toggleTheme.onclick = () => {
+    /* =======================================================
+       🌙 MODE CLAIR / SOMBRE
+    ======================================================= */
+    document.getElementById("toggleTheme").onclick = () => {
         document.body.classList.toggle("light");
     };
     </script>
 </body>
 </html>
-
