@@ -255,7 +255,6 @@
         }
     </style>
 </head>
-
 <body>
 
     <!-- ██████████████████████████████████████████████ -->
@@ -276,9 +275,8 @@
     <!-- ██████████████████████████████████████████████ -->
 
     <div id="content">
-        <!-- ██████████████████████████████████████████████ -->
-        <!--                  PAGE CHRONO                   -->
-        <!-- ██████████████████████████████████████████████ -->
+
+        <!-- ███████ PAGE CHRONO ███████ -->
 
         <section id="page-chrono" class="page active">
             <h1>Chronomètre Professionnel</h1>
@@ -304,10 +302,7 @@
         </section>
 
 
-
-        <!-- ██████████████████████████████████████████████ -->
-        <!--                  PAGE FOCUS                    -->
-        <!-- ██████████████████████████████████████████████ -->
+        <!-- ███████ PAGE FOCUS ███████ -->
 
         <section id="page-focus" class="page">
             <h1>Mode Focus</h1>
@@ -322,9 +317,7 @@
         </section>
 
 
-        <!-- ██████████████████████████████████████████████ -->
-        <!--              OVERLAY FULLSCREEN FOCUS          -->
-        <!-- ██████████████████████████████████████████████ -->
+        <!-- OVERLAY FOCUS FULLSCREEN -->
 
         <div id="focusOverlay">
             <div id="focusTimer">25:00</div>
@@ -332,15 +325,13 @@
         </div>
 
 
-
-        <!-- ██████████████████████████████████████████████ -->
-        <!--                PAGE POMODORO                   -->
-        <!-- ██████████████████████████████████████████████ -->
+        <!-- ███████ PAGE POMODORO ███████ -->
 
         <section id="page-pomodoro" class="page">
             <h1>Mode Pomodoro</h1>
 
             <div style="text-align:center;">
+
                 Travail (min) :
                 <input id="pomoWork" type="number" value="25" min="1"
                        style="width:60px;padding:5px;border-radius:8px;text-align:center;">
@@ -367,22 +358,35 @@
                 <div id="pomodoroDisplay">--:--</div>
 
                 <div id="pomodoroStatus"
-                     style="opacity:0.8;font-size:18px;margin-top:10px;"></div>
+                     style="opacity:0.8;font-size:18px;margin-top:10px;">
+                     Pomodoro en attente
+                </div>
+
+                <!-- BOUTON STOP CARRÉ ROUGE (Choix C) -->
+                <button id="stopPomodoro"
+                        style="
+                            background:#c0392b;
+                            margin-top:25px;
+                            padding:14px 28px;
+                            border-radius:6px;
+                            font-size:17px;
+                            font-weight:600;
+                        ">
+                    ⛔ Arrêter la session
+                </button>
+
             </div>
         </section>
 
 
-
-        <!-- ██████████████████████████████████████████████ -->
-        <!--                   PAGE STATS                   -->
-        <!-- ██████████████████████████████████████████████ -->
+        <!-- ███████ PAGE STATS ███████ -->
 
         <section id="page-stats" class="page">
             <h1>Statistiques</h1>
 
             <div id="statsSummary"
                  style="background:#000;padding:20px;border-radius:var(--radius);
-                 margin-bottom:20px;text-align:center;">
+                        margin-bottom:20px;text-align:center;">
                 <p><b>Total travaillé aujourd'hui :</b> <span id="todayTotal">0 min</span></p>
                 <p><b>Total cette semaine :</b> <span id="weekTotal">0 min</span></p>
                 <p><b>Session la plus longue :</b> <span id="bestSession">0 min</span></p>
@@ -402,10 +406,7 @@
         </section>
 
 
-
-        <!-- ██████████████████████████████████████████████ -->
-        <!--                  PAGE OPTIONS                  -->
-        <!-- ██████████████████████████████████████████████ -->
+        <!-- ███████ PAGE OPTIONS ███████ -->
 
         <section id="page-options" class="page">
             <h1>Options</h1>
@@ -420,293 +421,357 @@
                 </p>
             </div>
         </section>
-    <script>
-    /* =======================================================
-       🟦 NAVIGATION — NAVBAR HORIZONTALE
-    ======================================================= */
-    const pages = document.querySelectorAll(".page");
-    const navItems = document.querySelectorAll(".nav-item");
 
-    navItems.forEach(item => {
-        item.addEventListener("click", () => {
-
-            // Changer l'onglet actif
-            navItems.forEach(i => i.classList.remove("active"));
-            item.classList.add("active");
-
-            // Afficher la page correspondante
-            const target = item.getAttribute("data-target");
-            pages.forEach(p => p.classList.remove("active"));
-            document.getElementById(target).classList.add("active");
-        });
-    });
+    </div> <!-- END CONTENT -->
 
 
-    /* =======================================================
-       🟩 CHRONOMÈTRE PRO
-    ======================================================= */
-    let chronoDisplay = document.getElementById("chronoDisplay");
 
-    let running = false;
-    let startTime = null;
-    let storedTime = 0;
-    let rafID = null;
+    <!-- ████████████████████████████████████████████████ -->
+    <!--                SCRIPT PROFESSIONNEL               -->
+    <!-- ████████████████████████████████████████████████ -->
 
-    function formatTime(ms) {
-        let h = Math.floor(ms / 3600000);
-        let m = Math.floor((ms / 60000) % 60);
-        let s = Math.floor((ms / 1000) % 60);
-        let c = Math.floor((ms % 1000) / 10);
+<script>
+/* ===========================================================
+    APPSTATE — Le Cerveau du site
+=========================================================== */
+const AppState = {
+    theme: "dark",
 
-        return (
-            String(h).padStart(2, "0") + ":" +
-            String(m).padStart(2, "0") + ":" +
-            String(s).padStart(2, "0") + "." +
-            String(c).padStart(2, "0")
-        );
+    chrono: { running: false, start: null, stored: 0 },
+
+    focus: { running: false, remaining: 0, start: null },
+
+    pomodoro: { running: false, phase: "idle", remaining: 0, cycle: 1 },
+
+    stats: []
+};
+
+/* ===========================================================
+   SAVE + LOAD
+=========================================================== */
+function saveState() {
+    AppState.theme = document.body.classList.contains("light") ? "light" : "dark";
+    localStorage.setItem("AppState", JSON.stringify(AppState));
+}
+
+function loadState() {
+    const data = localStorage.getItem("AppState");
+    if (!data) return;
+    Object.assign(AppState, JSON.parse(data));
+}
+
+// autosave every 500ms
+setInterval(saveState, 500);
+
+
+/* ===========================================================
+   THEME
+=========================================================== */
+function restoreTheme() {
+    if (AppState.theme === "light") document.body.classList.add("light");
+}
+
+document.getElementById("toggleTheme").onclick = () => {
+    document.body.classList.toggle("light");
+    saveState();
+};
+
+
+/* ===========================================================
+   CHRONO MODULE
+=========================================================== */
+const Chrono = {
+    display: document.getElementById("chronoDisplay"),
+    raf: null,
+
+    format(ms) {
+        const h = Math.floor(ms / 3600000);
+        const m = Math.floor((ms / 60000) % 60);
+        const s = Math.floor((ms / 1000) % 60);
+        const c = Math.floor((ms % 1000) / 10);
+        return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}.${String(c).padStart(2,"0")}`;
+    },
+
+    glow() {
+        this.display.classList.add("glow");
+        setTimeout(() => this.display.classList.remove("glow"), 200);
+    },
+
+    update() {
+        if (!AppState.chrono.running) return;
+        const now = Date.now();
+        const elapsed = AppState.chrono.stored + (now - AppState.chrono.start);
+        this.display.textContent = this.format(elapsed);
+        this.glow();
+        this.raf = requestAnimationFrame(() => this.update());
+    },
+
+    start() {
+        if (AppState.chrono.running) return;
+        AppState.chrono.running = true;
+        AppState.chrono.start = Date.now();
+        this.update();
+    },
+
+    stop() {
+        if (!AppState.chrono.running) return;
+        AppState.chrono.running = false;
+        AppState.chrono.stored += Date.now() - AppState.chrono.start;
+        cancelAnimationFrame(this.raf);
+    },
+
+    reset() {
+        AppState.chrono.running = false;
+        AppState.chrono.start = null;
+        AppState.chrono.stored = 0;
+        cancelAnimationFrame(this.raf);
+        this.display.textContent = "00:00:00.00";
+    },
+
+    restore() {
+        if (AppState.chrono.running) this.update();
+        else this.display.textContent = this.format(AppState.chrono.stored);
     }
+};
 
-    function glow() {
-        chronoDisplay.classList.add("glow");
-        setTimeout(() => chronoDisplay.classList.remove("glow"), 200);
-    }
+document.getElementById("btnStart").onclick = () => Chrono.start();
+document.getElementById("btnStop").onclick = () => Chrono.stop();
+document.getElementById("btnReset").onclick = () => Chrono.reset();
 
-    function updateChrono() {
-        if (!running) return;
+document.getElementById("btnAdd").onclick = () => {
+    const get = id => parseInt(document.getElementById(id).value) || 0;
+    const add = get("h")*3600000 + get("m")*60000 + get("s")*1000 + get("totalSec")*1000;
+    AppState.chrono.stored += add;
+    Chrono.display.textContent = Chrono.format(AppState.chrono.stored);
+    Chrono.glow();
+};
 
-        let now = Date.now();
-        let elapsed = (now - startTime) + storedTime;
+document.getElementById("btnRemove").onclick = () => {
+    const get = id => parseInt(document.getElementById(id).value) || 0;
+    const sub = get("h")*3600000 + get("m")*60000 + get("s")*1000 + get("totalSec")*1000;
+    AppState.chrono.stored = Math.max(0, AppState.chrono.stored - sub);
+    Chrono.display.textContent = Chrono.format(AppState.chrono.stored);
+    Chrono.glow();
+};
 
-        chronoDisplay.textContent = formatTime(elapsed);
-        glow();
 
-        rafID = requestAnimationFrame(updateChrono);
-    }
+/* ===========================================================
+   FOCUS MODULE
+=========================================================== */
+const Focus = {
+    overlay: document.getElementById("focusOverlay"),
+    display: document.getElementById("focusTimer"),
+    interval: null,
 
-    document.getElementById("btnStart").onclick = () => {
-        if (!running) {
-            running = true;
-            startTime = Date.now();
-            rafID = requestAnimationFrame(updateChrono);
+    start() {
+        const mins = parseInt(document.getElementById("focusMinutes").value);
+        AppState.focus.running = true;
+        AppState.focus.remaining = mins * 60;
+        this.show();
+        this.tick();
+        this.interval = setInterval(() => this.tick(), 1000);
+    },
+
+    tick() {
+        if (!AppState.focus.running) return;
+        AppState.focus.remaining--;
+        this.display.textContent =
+            `${String(Math.floor(AppState.focus.remaining/60)).padStart(2,"0")}:${String(AppState.focus.remaining%60).padStart(2,"0")}`;
+        if (AppState.focus.remaining <= 0) {
+            this.stop();
+            alert("🔥 Session Focus terminée !");
         }
-    };
+    },
 
-    document.getElementById("btnStop").onclick = () => {
-        if (running) {
-            running = false;
-            storedTime += Date.now() - startTime;
-            cancelAnimationFrame(rafID);
-        }
-    };
+    stop() {
+        clearInterval(this.interval);
+        AppState.focus.running = false;
+        this.hide();
+    },
 
-    document.getElementById("btnReset").onclick = () => {
-        running = false;
-        storedTime = 0;
-        chronoDisplay.textContent = "00:00:00.00";
-        cancelAnimationFrame(rafID);
-    };
-
-    function getMillis() {
-        let h = parseInt(document.getElementById("h").value) || 0;
-        let m = parseInt(document.getElementById("m").value) || 0;
-        let s = parseInt(document.getElementById("s").value) || 0;
-        let t = parseInt(document.getElementById("totalSec").value) || 0;
-
-        return h * 3600000 + m * 60000 + s * 1000 + t * 1000;
-    }
-
-    document.getElementById("btnAdd").onclick = () => {
-        storedTime += getMillis();
-        chronoDisplay.textContent = formatTime(storedTime);
-        glow();
-    };
-
-    document.getElementById("btnRemove").onclick = () => {
-        storedTime = Math.max(0, storedTime - getMillis());
-        chronoDisplay.textContent = formatTime(storedTime);
-        glow();
-    };
-
-
-
-    /* =======================================================
-       🎯 MODE FOCUS FULLSCREEN
-    ======================================================= */
-    const focusMinutes = document.getElementById("focusMinutes");
-    const btnStartFocus = document.getElementById("btnStartFocus");
-    const focusOverlay = document.getElementById("focusOverlay");
-    const focusTimer = document.getElementById("focusTimer");
-    const exitFocusBtn = document.getElementById("exitFocus");
-
-    let focusInterval = null;
-    let focusRemaining = 0;
-
-    function updateFocusDisplay() {
-        let m = Math.floor(focusRemaining / 60);
-        let s = focusRemaining % 60;
-        focusTimer.textContent =
-            String(m).padStart(2, "0") + ":" +
-            String(s).padStart(2, "0");
-    }
-
-    btnStartFocus.onclick = () => {
-        focusRemaining = parseInt(focusMinutes.value) * 60;
-
-        updateFocusDisplay();
-
-        focusOverlay.style.display = "flex";
+    show() {
+        this.overlay.style.display = "flex";
         document.body.style.overflow = "hidden";
+    },
 
-        focusInterval = setInterval(() => {
-            focusRemaining--;
-            updateFocusDisplay();
+    hide() {
+        this.overlay.style.display = "none";
+        document.body.style.overflow = "auto";
+    },
 
-            if (focusRemaining <= 0) {
-                clearInterval(focusInterval);
-                alert("🔥 Session Focus terminée !");
-                focusOverlay.style.display = "none";
-                document.body.style.overflow = "auto";
-            }
-        }, 1000);
-    };
-
-    exitFocusBtn.onclick = () => {
-        if (confirm("Quitter la session Focus ?")) {
-            clearInterval(focusInterval);
-            focusOverlay.style.display = "none";
-            document.body.style.overflow = "auto";
+    restore() {
+        if (AppState.focus.running) {
+            this.show();
+            this.display.textContent =
+                `${String(Math.floor(AppState.focus.remaining/60)).padStart(2,"0")}:${String(AppState.focus.remaining%60).padStart(2,"0")}`;
+            this.interval = setInterval(() => this.tick(), 1000);
         }
-    };
-
-
-
-    /* =======================================================
-       🍅 MODE POMODORO
-    ======================================================= */
-    const pomoWork = document.getElementById("pomoWork");
-    const pomoBreak = document.getElementById("pomoBreak");
-    const pomoLong = document.getElementById("pomoLong");
-    const pomoCycles = document.getElementById("pomoCycles");
-
-    const pomodoroDisplay = document.getElementById("pomodoroDisplay");
-    const pomodoroStatus = document.getElementById("pomodoroStatus");
-
-    let pomoTimer = null;
-    let pomoRemaining = 0;
-    let currentCycle = 1;
-    let phase = "work";
-
-    function updatePomoDisplay() {
-        let m = Math.floor(pomoRemaining / 60);
-        let s = pomoRemaining % 60;
-        pomodoroDisplay.textContent =
-            String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
     }
+};
 
-    document.getElementById("startPomodoro").onclick = () => {
-        currentCycle = 1;
-        phase = "work";
-        startPomodoroPhase();
-    };
+document.getElementById("btnStartFocus").onclick = () => Focus.start();
+document.getElementById("exitFocus").onclick = () => {
+    if (confirm("Quitter la session Focus ?")) Focus.stop();
+};
 
-    function startPomodoroPhase() {
-        if (phase === "work") {
-            pomoRemaining = parseInt(pomoWork.value) * 60;
-            pomodoroStatus.textContent = "Travail 🔥 (cycle " + currentCycle + ")";
-        } else if (phase === "break") {
-            pomoRemaining = parseInt(pomoBreak.value) * 60;
-            pomodoroStatus.textContent = "Pause 😌";
-        } else if (phase === "long") {
-            pomoRemaining = parseInt(pomoLong.value) * 60;
-            pomodoroStatus.textContent = "Longue pause 🧘";
+
+/* ===========================================================
+   POMODORO MODULE
+=========================================================== */
+const Pomodoro = {
+    display: document.getElementById("pomodoroDisplay"),
+    status: document.getElementById("pomodoroStatus"),
+    interval: null,
+
+    start() {
+        AppState.pomodoro.running = true;
+        AppState.pomodoro.phase = "work";
+        AppState.pomodoro.cycle = 1;
+        AppState.pomodoro.remaining =
+            parseInt(document.getElementById("pomoWork").value)*60;
+
+        this.updateUI();
+        this.tick();
+        this.interval = setInterval(() => this.tick(), 1000);
+    },
+
+    tick() {
+        if (!AppState.pomodoro.running) return;
+
+        AppState.pomodoro.remaining--;
+        this.updateUI();
+
+        if (AppState.pomodoro.remaining <= 0) this.nextPhase();
+    },
+
+    nextPhase() {
+        clearInterval(this.interval);
+        const cycles = parseInt(document.getElementById("pomoCycles").value);
+
+        if (AppState.pomodoro.phase === "work") {
+            if (AppState.pomodoro.cycle % cycles === 0) {
+                AppState.pomodoro.phase = "long";
+                AppState.pomodoro.remaining = parseInt(document.getElementById("pomoLong").value)*60;
+            } else {
+                AppState.pomodoro.phase = "break";
+                AppState.pomodoro.remaining = parseInt(document.getElementById("pomoBreak").value)*60;
+            }
+        } else {
+            AppState.pomodoro.phase = "work";
+            AppState.pomodoro.cycle++;
+            AppState.pomodoro.remaining = parseInt(document.getElementById("pomoWork").value)*60;
         }
 
-        updatePomoDisplay();
+        this.interval = setInterval(() => this.tick(), 1000);
+    },
 
-        clearInterval(pomoTimer);
-        pomoTimer = setInterval(() => {
-            pomoRemaining--;
-            updatePomoDisplay();
+    stop() {
+        if (!confirm("Voulez-vous vraiment arrêter la session Pomodoro ?")) return;
 
-            if (pomoRemaining <= 0) {
-                clearInterval(pomoTimer);
+        clearInterval(this.interval);
+        AppState.pomodoro.running = false;
+        AppState.pomodoro.phase = "idle";
+        AppState.pomodoro.remaining = 0;
+        AppState.pomodoro.cycle = 1;
 
-                if (phase === "work") {
-                    if (currentCycle % parseInt(pomoCycles.value) === 0) {
-                        phase = "long";
-                    } else {
-                        phase = "break";
-                    }
-                } else {
-                    currentCycle++;
-                    phase = "work";
-                }
+        this.display.textContent = "--:--";
+        this.status.textContent = "Pomodoro en attente";
+    },
 
-                startPomodoroPhase();
-            }
-        }, 1000);
+    updateUI() {
+        const m = Math.floor(AppState.pomodoro.remaining/60);
+        const s = AppState.pomodoro.remaining % 60;
+        this.display.textContent =
+            `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+
+        if (AppState.pomodoro.phase === "work")
+            this.status.textContent = `Travail 🔥 (cycle ${AppState.pomodoro.cycle})`;
+        else if (AppState.pomodoro.phase === "break")
+            this.status.textContent = "Pause 😌";
+        else if (AppState.pomodoro.phase === "long")
+            this.status.textContent = "Longue pause 🧘";
+    },
+
+    restore() {
+        if (!AppState.pomodoro.running) return;
+        this.updateUI();
+        this.interval = setInterval(() => this.tick(), 1000);
     }
+};
+
+document.getElementById("startPomodoro").onclick = () => Pomodoro.start();
+document.getElementById("stopPomodoro").onclick = () => Pomodoro.stop();
 
 
-    /* =======================================================
-       📊 STATISTIQUES
-    ======================================================= */
-    let stats = JSON.parse(localStorage.getItem("stats") || "[]");
+/* ===========================================================
+   STATS MODULE
+=========================================================== */
+const Stats = {
+    updateUI() {
+        const body = document.getElementById("statsBody");
+        body.innerHTML = "";
 
-    function saveStats() {
-        localStorage.setItem("stats", JSON.stringify(stats));
-    }
+        AppState.stats.forEach(s => {
+            const tr = document.createElement("tr");
+            tr.innerHTML =
+                `<td style="padding:10px;">${new Date(s.date).toLocaleString()}</td>
+                 <td style="padding:10px;">${s.minutes} min</td>`;
+            body.appendChild(tr);
+        });
 
-    function updateStatsUI() {
-        let today = new Date().toDateString();
-
-        let todayTotal = stats
+        const today = new Date().toDateString();
+        const todayTotal = AppState.stats
             .filter(s => new Date(s.date).toDateString() === today)
-            .reduce((acc, s) => acc + s.minutes, 0);
+            .reduce((a,b)=>a+b.minutes,0);
 
         document.getElementById("todayTotal").textContent = todayTotal + " min";
 
-        let weekTotal = stats
-            .filter(s => {
-                let d = new Date(s.date);
-                return d >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-            })
-            .reduce((acc, s) => acc + s.minutes, 0);
+        const weekTotal = AppState.stats
+            .filter(s => new Date(s.date) >= new Date(Date.now()-7*24*60*60*1000))
+            .reduce((a,b)=>a+b.minutes,0);
 
         document.getElementById("weekTotal").textContent = weekTotal + " min";
 
-        let best = stats.reduce((max, s) => Math.max(max, s.minutes), 0);
+        const best = AppState.stats.reduce((max,s)=>Math.max(max,s.minutes),0);
         document.getElementById("bestSession").textContent = best + " min";
-
-        let tbody = document.getElementById("statsBody");
-        tbody.innerHTML = "";
-
-        stats.forEach(s => {
-            let tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td style="padding:10px;">${new Date(s.date).toLocaleString()}</td>
-                <td style="padding:10px;">${s.minutes} min</td>`;
-            tbody.appendChild(tr);
-        });
     }
+};
 
-    updateStatsUI();
+document.getElementById("resetStats").onclick = () => {
+    if (confirm("Supprimer toutes les statistiques ?")) {
+        AppState.stats = [];
+        saveState();
+        Stats.updateUI();
+    }
+};
 
-    document.getElementById("resetStats").onclick = () => {
-        if (confirm("Supprimer toutes les stats ?")) {
-            stats = [];
-            saveStats();
-            updateStatsUI();
-        }
+
+/* ===========================================================
+   NAVIGATION
+=========================================================== */
+document.querySelectorAll(".nav-item").forEach(item => {
+    item.onclick = () => {
+        document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));
+        item.classList.add("active");
+
+        const t = item.getAttribute("data-target");
+        document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+        document.getElementById(t).classList.add("active");
     };
+});
 
 
-    /* =======================================================
-       🌙 MODE CLAIR / SOMBRE
-    ======================================================= */
-    document.getElementById("toggleTheme").onclick = () => {
-        document.body.classList.toggle("light");
-    };
-    </script>
+/* ===========================================================
+   RESTAURATION GLOBALE
+=========================================================== */
+loadState();
+restoreTheme();
+Chrono.restore();
+Focus.restore();
+Pomodoro.restore();
+Stats.updateUI();
+</script>
+
 </body>
+</html>
 </html>
